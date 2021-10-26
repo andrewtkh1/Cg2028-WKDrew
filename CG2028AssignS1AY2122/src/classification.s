@@ -21,46 +21,111 @@
 @R5 - Sample X1
 @R6 - Sample Y1
 @R7 - Working Reg
+@R8 - Total int of Label
 
 @Variables map
 @ .lcomm distance - Contains all the distance. Currently set for N = 100
 @ Equates
 classification:
 @ PUSH / save (only those) registers which are modified by your function
-			PUSH {R1-R7,LR}
+			PUSH {R1-R8,LR}
 @ parameter registers need not be saved.
 			LDR R4, =DISTANCE
 
 @ write asm function body here
 			PUSH {R7}
-			BL LOADSAMPLE @Load in X1, Y1
+			BL LOADSAMPLE 		@Load in X1, Y1
 			POP {R7}
-			PUSH {R0,R4,R7} @Save pointer of dist array & N to 8 & R7
-CALCDIST:	BL SETDISTANCE @Loop to set distance array
+			PUSH {R0,R4,R7} 	@Save pointer of dist array & N to 8 & R7
+CALCDIST:	BL SETDISTANCE 		@Loop to set distance array
 			SUBS R0, #1
-			BNE CALCDIST @Once done: R5,R6 is free.
-			POP {R0,R4,R7} @Set pointer back to start of dist array & N to 8
+			BNE CALCDIST 		@Once done: R5,R6 is free.
+			POP {R0,R4,R7} 		@Set pointer back to start of dist array & N to 8
 			LDR R1, =SHORTESTKDIST
-			PUSH {
-
-		MOV R0, #5
-
+			PUSH {R0-R7}
+			BL SORTDIST			@Sets KDist to shortst few
+			POP {R0-R7}
+			PUSH {R0-R7}
+			MOV R8, #0
+			BL SETLABELS
+			POP {R0-R7}
+			MOV R7, #2
+			SDIV R8, R7 		@Div R8/2
+			SDIV R7, R0, R7		@Div N/2
+			CMP R8, R7
+			ITE	GE
+			MOVGE R0, #1
+			MOVLT R0, #0
 @ POP / restore original register values. DO NOT save or restore R0. Why?
-		POP {R1-R7,LR}
+			POP {R1-R8,LR}
 @ return to C program
-		BX	LR
+			BX	LR
 
 @R0 - N(Int)
 @R1 - SHORTESTKDIST
 @R2 - labels
 @R3 - K
 @R4 - Dist(Array)
-@R5/R6/R7 - Working (Unsorted Counter, Sorted coutner,
-SORTDIST:
-		MOV R5, #0 			@Load Unsorted array counter
-		MOV R6, #0			@Load Sorted array counter
-OUTER:
+@R5/R6/R7 - Working (Cur K val, Cur Dist label, CurDist)
+@R8 - SHORTESTLABEL (INT)
 
+SETLABELS:
+			PUSH {R0,R2,R4}
+			CMP R3,#0			@If found all K Labels
+			ITT EQ
+			POPEQ {R0,R2,R4}		@Pop Before exit
+			BXEQ LR
+			LDR R5, [R1], #4 	@Load K val
+LOOPNARR:						@Loop N times
+			LDR	R7, [R4], #4 	@Get CurDist
+			LDR R6, [R2], #4 	@Get Label
+			SUBS R7, R5
+			ITTTT EQ
+			ADDEQ R8, R6
+			SUBEQ R3, #1
+			POPEQ {R0,R2,R4}	@Reload all values for next loop
+			BEQ SETLABELS
+			SUBS R0, #1
+			BNE LOOPNARR		@End loop N times
+			POP {R0,R2,R4}		@Pop if Never found
+			BX LR				@Go back if can't find
+
+
+
+@R0 - N(Int)
+@R1 - SHORTESTKDIST
+@R3 - K
+@R4 - Dist(Array)
+@R5/R6/R7 - Working (Unused ,curDist in K , curDist in N)
+SORTDIST:
+		PUSH {R1,R3}
+FIRSTK:						@Load first K dist into K-array
+		LDR R7, [R4], #4
+		STR R7, [R1], #4
+		SUBS R3, #1
+		SUB R0, #1			@Decrease N
+		BNE FIRSTK
+		POP {R1,R3}
+REMAIN:
+		PUSH {R1,R3}		@Store K & Pointer of ShorestK array
+		CMP R0, #0			@Check if N == 0
+		IT EQ
+		BXEQ LR				@Return If N = 0
+		LDR R7, [R4], #4	@Load next from DistN
+LOOPK:
+		LDR R6, [R1], #4	@Load next from ShortestK
+		CMP R7, R6
+		ITTTT LT			@If R7 LessThan R6
+		STRLT R7,[R1,#-4] 	@Store R7
+		ADDLT R7, R6		@Swaps R7 & R6
+		SUBLT R6, R7, R6
+		SUBLT R7, R6
+		SUBS R3, #1			@Minus 1 K
+		BNE LOOPK			@End of K loop
+		POP {R1,R3}
+		SUBS R0, #1
+		BNE REMAIN			@End of Whole N loop
+		BX LR
 
 @R0 - N(Int)
 @R1 - Points(Array)
@@ -91,8 +156,8 @@ LOADSAMPLE:
 
 
 @label: .word value
-K: .word 1
+POINTER: .word 0
 @.lcomm label num_bytes
 .lcomm DISTANCE 400 		@Set for N = 100
 .lcomm SHORTESTKDIST 400 	@Set for K = 100
-.lcomm SORTEDDIST 400 		@Set For K = 100
+.lcomm SHORTESTLABEL 400 	@Set For K = 100
