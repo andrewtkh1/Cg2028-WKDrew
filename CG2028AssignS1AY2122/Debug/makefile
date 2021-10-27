@@ -29,7 +29,7 @@ all: CG2028AssignS1AY2122.axf
 CG2028AssignS1AY2122.axf: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: MCU Linker'
-	arm-none-eabi-gcc -nostdlib -L"C:\Users\Pryo\Desktop\Cg2028 PRoj\Lib_CMSISv1p30_LPC17xx\Debug" -Xlinker --gc-sections -Xlinker -Map=CG2028AssignS1AY2122.map -mcpu=cortex-m3 -mthumb -T "CG2028AssignS1AY2122_Debug.ld" -o"CG2028AssignS1AY2122.axf" $(OBJS) $(USER_OBJS) $(LIBS)
+	arm-none-eabi-gcc -nostdlib -L"C:\Users\Drew\Desktop\Cg2028 lab\Lib_CMSISv1p30_LPC17xx\Debug" -Xlinker --gc-sections -Xlinker -Map=CG2028AssignS1AY2122.map -mcpu=cortex-m3 -mthumb -T "CG2028AssignS1AY2122_Debug.ld" -o"CG2028AssignS1AY2122.axf" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 	$(MAKE) --no-print-directory post-build

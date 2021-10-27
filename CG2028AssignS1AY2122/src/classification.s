@@ -22,42 +22,44 @@
 @R6 - Sample Y1
 @R7 - Working Reg
 @R8 - Total int of Label
+@R9 - Shortest Dist
 
 @Variables map
 @ .lcomm distance - Contains all the distance. Currently set for N = 100
 @ Equates
 classification:
 @ PUSH / save (only those) registers which are modified by your function
-			PUSH {R1-R8,LR}
+			PUSH {R1-R9,LR}
 @ parameter registers need not be saved.
-			LDR R4, =DISTANCE
+			LDR R4, =DISTANCE	@Store all distance from K
 
 @ write asm function body here
-			PUSH {R7}
+			@PUSH {R7}
 			BL LOADSAMPLE 		@Load in X1, Y1
-			POP {R7}
+			@POP {R7}
 			PUSH {R0,R4,R7} 	@Save pointer of dist array & N to 8 & R7
 CALCDIST:	BL SETDISTANCE 		@Loop to set distance array
 			SUBS R0, #1
 			BNE CALCDIST 		@Once done: R5,R6 is free.
 			POP {R0,R4,R7} 		@Set pointer back to start of dist array & N to 8
-			LDR R1, =SHORTESTKDIST
+			LDR R1, =SHORTESTKDIST	@Load array of size 100
 			PUSH {R0-R7}
-			BL SORTDIST			@Sets KDist to shortst few
+			BL GETDIST			@Get K Shortest Dist
 			POP {R0-R7}
 			PUSH {R0-R7}
-			MOV R8, #0
-			BL SETLABELS
+			MOV R8, #0			@Set R8 to 0 first.
+			BL SETLABELS		@Gets the K Shortest Label
 			POP {R0-R7}
-			MOV R7, #2
-			SDIV R8, R7 		@Div R8/2
-			SDIV R7, R0, R7		@Div N/2
-			CMP R8, R7
-			ITE	GE
-			MOVGE R0, #1
-			MOVLT R0, #0
+			@MOV R7, #2
+			@SDIV R8, R7 		@Div R8/2
+			@SDIV R7, R3, R7	@Div K/2
+			@CMP R8, R7
+			@ITE	GE
+			@MOVGE R0, #1
+			@MOVLT R0, #0
+			MOV R0, R8
 @ POP / restore original register values. DO NOT save or restore R0. Why?
-			POP {R1-R8,LR}
+			POP {R1-R9,LR}
 @ return to C program
 			BX	LR
 
@@ -68,20 +70,24 @@ CALCDIST:	BL SETDISTANCE 		@Loop to set distance array
 @R4 - Dist(Array)
 @R5/R6/R7 - Working (Cur K val, Cur Dist label, CurDist)
 @R8 - SHORTESTLABEL (INT)
+@R9 - Shortest Dist chosen
 
 SETLABELS:
 			PUSH {R0,R2,R4}
 			CMP R3,#0			@If found all K Labels
-			ITT EQ
-			POPEQ {R0,R2,R4}		@Pop Before exit
+			ITT EQ				@Check if K = 0
+			POPEQ {R0,R2,R4}	@Pop Before exit
 			BXEQ LR
 			LDR R5, [R1], #4 	@Load K val
 LOOPNARR:						@Loop N times
 			LDR	R7, [R4], #4 	@Get CurDist
 			LDR R6, [R2], #4 	@Get Label
+			CMP R7, R5
+			IT EQ				@Get shortest dist
+			MOVEQ R9, R5		@Set R9 to shortest.
 			SUBS R7, R5
 			ITTTT EQ
-			ADDEQ R8, R6
+			ADDEQ R8, R6		@Can replace as MOV
 			SUBEQ R3, #1
 			POPEQ {R0,R2,R4}	@Reload all values for next loop
 			BEQ SETLABELS
@@ -97,7 +103,7 @@ LOOPNARR:						@Loop N times
 @R3 - K
 @R4 - Dist(Array)
 @R5/R6/R7 - Working (Unused ,curDist in K , curDist in N)
-SORTDIST:
+GETDIST:
 		PUSH {R1,R3}
 FIRSTK:						@Load first K dist into K-array
 		LDR R7, [R4], #4
@@ -134,7 +140,6 @@ LOOPK:
 @R6 - Sample Y1
 @R7 - X1, X2
 SETDISTANCE:
-
 		PUSH {R5-R6}
 		LDR R7, [R1], #4 @Get x2
 		SUB R5, R7
