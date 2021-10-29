@@ -50,6 +50,13 @@ CALCDIST:	BL SETDISTANCE 		@Loop to set distance array
 			MOV R8, #0			@Set R8 to 0 first.
 			BL SETLABELS		@Gets the K Shortest Label
 			POP {R0-R7}
+			@MOV R7, #2
+			@SDIV R8, R7 		@Div R8/2
+			@SDIV R7, R3, R7	@Div K/2
+			@CMP R8, R7
+			@ITE	GE
+			@MOVGE R0, #1
+			@MOVLT R0, #0
 			MOV R0, R8
 @ POP / restore original register values. DO NOT save or restore R0. Why?
 			POP {R1-R9,LR}
@@ -134,13 +141,13 @@ LOOPK:
 @R7 - X1, X2
 SETDISTANCE:
 		PUSH {R5-R6}
-		LDR R7, [R1], #4 	@Get x2
+		LDR R7, [R1], #4 @Get x2
 		SUB R5, R7
-		MUL R5, R5 			@Store (x1-x2)^2 into R5
-		LDR R7, [R1], #4 	@get y2
-		SUB R6, R7 	   		@Value of y1 - y2
-		MLA R5, R6, R6, R5 	@R6^2 + R5 into R5.
-		STR R5, [R4], #4 	@put value into Memory
+		MUL R5, R5 @Store (x1-x2)^2 into R5
+		LDR R7, [R1], #4 @get y2
+		SUB R6, R7 	   @Value of y1 - y2
+		MLA R5, R6, R6, R5 @R6^2 + R5 into R5.
+		STR R5, [R4], #4 @put value into Memory
 		POP {R5-R6}
 		BX LR
 
