@@ -52,7 +52,7 @@
   44              	.LC1:
   45 0068 01000000 		.word	1
   46 006c 01000000 		.word	1
-  47 0070 01000000 		.word	1
+  47 0070 00000000 		.word	0
   48 0074 00000000 		.word	0
   49 0078 01000000 		.word	1
   50 007c 00000000 		.word	0
@@ -122,7 +122,7 @@
   96 0024 0FC4     		stmia	r4!, {r0, r1, r2, r3}
   97 0026 95E80F00 		ldmia	r5, {r0, r1, r2, r3}
   98 002a 84E80F00 		stmia	r4, {r0, r1, r2, r3}
-  20:../src/main.c **** 	int label[8] = {1, 1, 1, 0, 1, 0, 1, 0};
+  20:../src/main.c **** 	int label[8] = {1, 1, 0, 0, 1, 0, 1, 0};
   99              		.loc 1 20 0
  100 002e 40F20003 		movw	r3, #:lower16:.LC1
  101 0032 C0F20003 		movt	r3, #:upper16:.LC1
@@ -451,18 +451,18 @@
  368              	.Letext0:
 DEFINED SYMBOLS
                             *ABS*:00000000 main.c
-C:\Users\Drew\AppData\Local\Temp\ccjmFeuB.s:19     .rodata:00000000 $d
-C:\Users\Drew\AppData\Local\Temp\ccjmFeuB.s:20     .rodata:00000000 .LC3
-C:\Users\Drew\AppData\Local\Temp\ccjmFeuB.s:23     .rodata:00000014 .LC4
-C:\Users\Drew\AppData\Local\Temp\ccjmFeuB.s:26     .rodata:00000028 .LC0
-C:\Users\Drew\AppData\Local\Temp\ccjmFeuB.s:44     .rodata:00000068 .LC1
-C:\Users\Drew\AppData\Local\Temp\ccjmFeuB.s:54     .rodata:00000088 .LC2
-C:\Users\Drew\AppData\Local\Temp\ccjmFeuB.s:58     .text.main:00000000 $t
-C:\Users\Drew\AppData\Local\Temp\ccjmFeuB.s:63     .text.main:00000000 main
-C:\Users\Drew\AppData\Local\Temp\ccjmFeuB.s:157    .text.classification_c:00000000 classification_c
-C:\Users\Drew\AppData\Local\Temp\ccjmFeuB.s:146    .rodata:00000090 .LC5
-C:\Users\Drew\AppData\Local\Temp\ccjmFeuB.s:149    .rodata:000000a8 .LC6
-C:\Users\Drew\AppData\Local\Temp\ccjmFeuB.s:152    .text.classification_c:00000000 $t
+C:\Users\Pryo\AppData\Local\Temp\ccPFR3ck.s:19     .rodata:00000000 $d
+C:\Users\Pryo\AppData\Local\Temp\ccPFR3ck.s:20     .rodata:00000000 .LC3
+C:\Users\Pryo\AppData\Local\Temp\ccPFR3ck.s:23     .rodata:00000014 .LC4
+C:\Users\Pryo\AppData\Local\Temp\ccPFR3ck.s:26     .rodata:00000028 .LC0
+C:\Users\Pryo\AppData\Local\Temp\ccPFR3ck.s:44     .rodata:00000068 .LC1
+C:\Users\Pryo\AppData\Local\Temp\ccPFR3ck.s:54     .rodata:00000088 .LC2
+C:\Users\Pryo\AppData\Local\Temp\ccPFR3ck.s:58     .text.main:00000000 $t
+C:\Users\Pryo\AppData\Local\Temp\ccPFR3ck.s:63     .text.main:00000000 main
+C:\Users\Pryo\AppData\Local\Temp\ccPFR3ck.s:157    .text.classification_c:00000000 classification_c
+C:\Users\Pryo\AppData\Local\Temp\ccPFR3ck.s:146    .rodata:00000090 .LC5
+C:\Users\Pryo\AppData\Local\Temp\ccPFR3ck.s:149    .rodata:000000a8 .LC6
+C:\Users\Pryo\AppData\Local\Temp\ccPFR3ck.s:152    .text.classification_c:00000000 $t
                      .debug_frame:00000010 $d
 
 UNDEFINED SYMBOLS

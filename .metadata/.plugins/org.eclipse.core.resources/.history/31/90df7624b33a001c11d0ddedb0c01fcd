@@ -52,7 +52,7 @@ CALCDIST:	BL SETDISTANCE 			@Loop to set distance array
 									@R5:R9 - Free
 			PUSH {R0-R4}
 			MOV R8, #0				@Set R8 to 0 first.
-			BL SETLABELS			@Gets the Shortest Label
+			BL SETLABELS			@Gets the K Shortest Label
 			POP {R0-R4}
 			MOV R0, R8
 @ POP / restore original register values. DO NOT save or restore R0. Why?
@@ -63,8 +63,9 @@ CALCDIST:	BL SETDISTANCE 			@Loop to set distance array
 @R0 - N(Int)
 @R1 - SHORTESTKDIST
 @R2 - labels
+@R3 - K
 @R4 - Dist(Array)
-@R5/R6/R7 - Working (Free, Cur Dist label, CurDist)
+@R5/R6/R7 - Working (Cur K val, Cur Dist label, CurDist)
 @R8 - SHORTESTLABEL (INT)
 @R9 - Shortest Dist chosen
 
@@ -79,17 +80,15 @@ LOOPNARR:						@Loop N times
 			LDR	R7, [R4], #4 	@Get CurDist
 			LDR R6, [R2], #4 	@Get Label
 			CMP R7, R5
-			ITTTT EQ
+			ITTT EQ
 			MOVEQ R9, R5		@Set R9 to shortest.
-			MOVEQ R8, R6		@Set Label
+			MOVEQ R8, R6		@Can replace as MOV
 			POPEQ {R0,R2,R4}	@POP back Reg.
-			BXEQ LR				@Return back
+			BXEQ LR
 			SUBS R0, #1
 			BNE LOOPNARR		@End loop N times
 			POP {R0,R2,R4}		@Pop if Never found
-			MOV R9, #0
-			MOV R8, #2
-			BX LR				@Return label -2 if not found
+			BX LR				@Go back if can't find
 
 @R0 - N(Int)
 @R1 - SHORTESTKDIST
@@ -103,7 +102,7 @@ REMAIN:
 		LDR R7, [R4], #4	@Load next from DistN
 		LDR R6, [R1]		@Load Cur item from ShortestK
 		CMP R7, R6
-		IT LT			@If R7 LessThan R6
+		ITTTT LT			@If R7 LessThan R6
 		STRLT R7,[R1] 		@Store R7
 		SUBS R0, #1			@Decrease N
 		IT EQ
