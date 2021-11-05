@@ -31,7 +31,7 @@ classification:
 @ PUSH / save (only those) registers which are modified by your function
 			PUSH {R1-R9,LR}
 @ parameter registers need not be saved.
-			LDR R4, =DISTANCE	@Store all distance from K
+			LDR R4, =DISTANCE		@Store all distance from K
 
 @ write asm function body here
 			BL LOADSAMPLE 			@Load in X1, Y1
@@ -70,45 +70,41 @@ CALCDIST:	BL SETDISTANCE 			@Loop to set distance array
 
 SETLABELS:
 			PUSH {R0,R2,R4}
-			CMP R3,#0			@If found all K Labels
-			ITT EQ				@Check if K = 0
-			POPEQ {R0,R2,R4}	@Pop Before exit
-			BXEQ LR
-			LDR R5, [R1]	 	@Load K val
-LOOPNARR:						@Loop N times
-			LDR	R7, [R4], #4 	@Get CurDist
-			LDR R6, [R2], #4 	@Get Label
+			LDR R5, [R1]	 		@Load 1st val
+LOOPNARR:							@Loop N times
+			LDR	R7, [R4], #4 		@Get CurDist
+			LDR R6, [R2], #4 		@Get Label
 			CMP R7, R5
 			ITTTT EQ
-			MOVEQ R9, R5		@Set R9 to shortest.
-			MOVEQ R8, R6		@Set Label
-			POPEQ {R0,R2,R4}	@POP back Reg.
-			BXEQ LR				@Return back
+			MOVEQ R9, R5			@Set R9 to shortest.
+			MOVEQ R8, R6			@Set Label
+			POPEQ {R0,R2,R4}		@POP back Reg.
+			BXEQ LR					@Return back
 			SUBS R0, #1
-			BNE LOOPNARR		@End loop N times
-			POP {R0,R2,R4}		@Pop if Never found
+			BNE LOOPNARR			@End loop N times
+			POP {R0,R2,R4}			@Pop if Never found
 			MOV R9, #0
 			MOV R8, #2
-			BX LR				@Return label -2 if not found
+			BX LR					@Return label -2 if not found
 
 @R0 - N(Int)
 @R1 - SHORTESTKDIST
 @R4 - Dist(Array)
 @R5/R6/R7 - Working (Unused ,curDist in K , curDist in N)
-GETDIST:					@Load first K dist into K-array
+GETDIST:							@Load first dist into K-array
 		LDR R7, [R4], #4
 		STR R7, [R1]
-		SUB R0, #1			@Decrease N
+		SUB R0, #1					@Decrease N
 REMAIN:
-		LDR R7, [R4], #4	@Load next from DistN
-		LDR R6, [R1]		@Load Cur item from ShortestK
+		LDR R7, [R4], #4			@Load next from DistN
+		LDR R6, [R1]				@Load Cur item from ShortestK
 		CMP R7, R6
-		IT LT			@If R7 LessThan R6
-		STRLT R7,[R1] 		@Store R7
-		SUBS R0, #1			@Decrease N
+		IT LT						@If R7 LessThan R6
+		STRLT R7,[R1] 				@Store R7
+		SUBS R0, #1					@Decrease N
 		IT EQ
-		BXEQ LR				@Return If N = 0
-		B REMAIN			@End of Whole N loop
+		BXEQ LR						@Return If N = 0
+		B REMAIN					@End of Whole N loop
 
 @R0 - N(Int)
 @R1 - Points(Array)
@@ -118,13 +114,13 @@ REMAIN:
 @R7 - X1, X2
 SETDISTANCE:
 		PUSH {R5-R6}
-		LDR R7, [R1], #4 	@Get x2
+		LDR R7, [R1], #4 			@Get x2
 		SUB R5, R7
-		MUL R5, R5 			@Store (x1-x2)^2 into R5
-		LDR R7, [R1], #4 	@get y2
-		SUB R6, R7 	   		@Value of y1 - y2
-		MLA R5, R6, R6, R5 	@R6^2 + R5 into R5.
-		STR R5, [R4], #4 	@put value into Memory
+		MUL R5, R5 					@Store (x1-x2)^2 into R5
+		LDR R7, [R1], #4 			@get y2
+		SUB R6, R7 	   				@Value of y1 - y2
+		MLA R5, R6, R6, R5 			@R6^2 + R5 into R5.
+		STR R5, [R4], #4 			@put value into Memory
 		POP {R5-R6}
 		BX LR
 
@@ -140,5 +136,5 @@ LOADSAMPLE:
 @label: .word value
 POINTER: .word 0
 @.lcomm label num_bytes
-.lcomm DISTANCE 400 		@Set for N = 100
-.lcomm SHORTESTKDIST 4 		@Set for K = 1
+.lcomm DISTANCE 400 				@Set for N = 100
+.lcomm SHORTESTKDIST 4 				@Set for K = 1
